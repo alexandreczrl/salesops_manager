@@ -1,20 +1,22 @@
 import gspread
+from google.oauth2.service_account import Credentials
 import pandas as pd
-import streamlit as st
-from oauth2client.service_account import ServiceAccountCredentials
 
 def load_data(sheet_name):
-    scope = [
-        "https://spreadsheets.google.com/feeds",
+    scopes = [
+        "https://www.googleapis.com/auth/spreadsheets",
         "https://www.googleapis.com/auth/drive"
     ]
+    creds = Credentials.from_service_account_file("credentials.json", scopes=scopes)
+    
+    # ✅ Vérification de la connexion
+    print("✅ Connexion réussie avec :", creds.service_account_email)
 
-    creds_dict = st.secrets["credentials"]  # ✅ NE PAS UTILISER json.loads
-    creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
     client = gspread.authorize(creds)
-
-    sheet = client.open_by_key("1fFjvk0X6vvvM7ZEBfF03yGpNEQhzL1IkM2YrAxJCc70")  # 👈 Ton ID de Google Sheet
-    worksheet = sheet.worksheet(sheet_name)
-    data = worksheet.get_all_records()
-
+    
+    # Ouverture de la feuille par son identifiant
+    sheet = client.open_by_key("1fFjvk0X6vvvM7ZEBfF03yGpNEQhzL1IkM2YrAxJCc70").worksheet(sheet_name)
+    
+    # Récupération des données
+    data = sheet.get_all_records()
     return pd.DataFrame(data)
