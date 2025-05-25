@@ -2,23 +2,20 @@ import streamlit as st
 import pandas as pd
 from sheets_connector import load_data
 
-st.set_page_config(page_title="SalesOps Manager – Start.io 2025", layout="wide")
+# Configuration de la page
+st.set_page_config(page_title="SalesOps Manager – Prospects", layout="wide")
 
-st.title("📊 SalesOps Manager – Start.io 2025")
+# Titre principal
+st.title("📊 Dashboard des Prospects – SalesOps Manager")
 
-tab1, tab2, tab3 = st.tabs(["Prospects", "Consultants", "Candidats"])
+# Chargement des données depuis Google Sheets
+try:
+    df = load_data("Prospects")  # 👉 Mets ici le nom EXACT de l’onglet de ton Google Sheet
 
-with tab1:
-    st.header("🧲 Prospects")
-    df = load_data("Prospects")
-    st.dataframe(df)
+    # Affichage du tableau de données
+    st.subheader("Liste des prospects")
+    st.dataframe(df, use_container_width=True)
 
-with tab2:
-    st.header("🧠 Consultants")
-    df = load_data("Consultants")
-    st.dataframe(df)
-
-with tab3:
-    st.header("👤 Candidats")
-    df = load_data("Candidats")
-    st.dataframe(df)
+except Exception as e:
+    st.error("❌ Erreur lors du chargement des données :")
+    st.exception(e)
